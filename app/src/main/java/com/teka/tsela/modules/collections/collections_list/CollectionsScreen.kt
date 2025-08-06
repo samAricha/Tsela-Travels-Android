@@ -74,7 +74,7 @@ fun CollectionsScreen(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Image(
-                            painter = painterResource(id = R.drawable.tsela_travels_nbg),
+                            painter = painterResource(id = R.drawable.tsela_image),
                             contentDescription = "App Logo",
                             modifier = Modifier.size(48.dp)
                         )
