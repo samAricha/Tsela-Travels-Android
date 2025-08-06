@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.teka.chaitrak"
+    namespace = "com.teka.tsela"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.teka.chaitrak"
+        applicationId = "com.teka.tsela"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
