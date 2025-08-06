@@ -10,7 +10,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Mail
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,7 +37,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.teka.chaitrak.ui.theme.quicksand
 import com.teka.chaitrak.ui.theme.rajdhani
-import com.teka.chaitrak.utils.ui_components.CustomDropDown3
 import com.teka.chaitrak.utils.ui_components.CustomInputTextField2
 import com.teka.chaitrak.utils.ui_components.CustomSnackbarHost
 import com.teka.chaitrak.utils.ui_components.HandleSnackbarMessages
@@ -52,7 +50,6 @@ import com.teka.chaitrak.R
 @OptIn(ExperimentalComposeUiApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    navigator: NavHostController,
     viewModel: LoginScreenViewModel = hiltViewModel(),
 ) {
     val context = LocalContext.current
@@ -157,8 +154,8 @@ fun LoginScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.chai_trak_logo),
-                        contentDescription = "ChaiTrak Logo",
+                        painter = painterResource(id = R.drawable.tsela_travels_nbg),
+                        contentDescription = "Tsela Logo",
                         modifier = Modifier.size(110.dp),
                         contentScale = ContentScale.Fit
                     )

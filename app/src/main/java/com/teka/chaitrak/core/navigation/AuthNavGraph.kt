@@ -21,9 +21,7 @@ fun NavGraphBuilder.authNavGraph(
             popEnterTransition = ScreenTransitions.popEnterTransition,
             popExitTransition = ScreenTransitions.popExitTransition,
             content = {
-                LoginScreen(
-                    navigator = navController
-                )
+                LoginScreen()
             },
 
         )

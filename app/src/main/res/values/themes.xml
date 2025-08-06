@@ -5,7 +5,7 @@
 
     <style name="Theme.CustomSplashScreenTheme" parent="Theme.SplashScreen">
         <item name="windowSplashScreenBackground">@color/white</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/chai_trak_logo</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/tsela_image</item>
         <item name="windowSplashScreenAnimationDuration">1</item>
 
 
