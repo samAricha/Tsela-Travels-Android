@@ -1,4 +1,3 @@
-// Hotel domain models
 package com.teka.tsela.modules.hotels_module
 
 import kotlinx.serialization.Serializable
