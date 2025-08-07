@@ -21,7 +21,7 @@ fun MainNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.CollectionsListScreen.route,
+        startDestination = AppScreens.DestinationsScreen.route,
         route = MAIN_GRAPH_ROUTE
     ) {
 
@@ -104,9 +104,6 @@ fun MainNavGraph(
         ){
 //            ExcursionsDetailsScreen(navController)
         }
-
-
-
 
 
     }

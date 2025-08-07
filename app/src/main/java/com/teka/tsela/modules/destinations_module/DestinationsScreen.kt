@@ -2,6 +2,7 @@ package com.teka.tsela.modules.destinations_module
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,6 +19,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -27,6 +29,7 @@ import coil3.compose.AsyncImage
 import com.teka.tsela.ui.theme.TextSizeXLarge
 import com.teka.tsela.ui.theme.TextSizeXXLarge
 import com.teka.tsela.utils.ui_components.CustomTopAppBar
+import com.teka.tsela.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,12 +57,22 @@ fun DestinationsScreen(
         topBar = {
             CustomTopAppBar(
                 title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.tsela_image),
+                            contentDescription = "App Logo",
+                            modifier = Modifier.size(48.dp)
+                        )
                     Text(
                         "Destinations",
                         fontSize = TextSizeXXLarge,
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold
                     )
+                        }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent

@@ -119,7 +119,7 @@ dependencies {
     implementation(libs.kotlin.reflect)
 
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-
+    implementation("co.touchlab:kermit:2.0.4")
 
 
 }

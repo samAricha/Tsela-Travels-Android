@@ -1,8 +1,10 @@
 package com.teka.tsela.core.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Tour
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -24,28 +26,32 @@ fun BottomNavigationBar(
     currentRoute: String?
 ) {
     val items = listOf(
+//        BottomNavItem(
+//            title = "Collections",
+//            icon = Icons.Default.List,
+//            route = AppScreens.CollectionsListScreen.route
+//        ),
         BottomNavItem(
-            title = "Collections",
-            icon = Icons.Default.List,
-            route = AppScreens.CollectionsListScreen.route
+            title = "Destinations",
+            icon = Icons.Default.Place,
+            route = AppScreens.DestinationsScreen.route
         ),
         BottomNavItem(
-            title = "Add",
-            icon = Icons.Default.Add,
-            route = AppScreens.CollectionsFormScreen.route
+            title = "Excursions",
+            icon = Icons.Default.Tour,
+            route = AppScreens.ExcursionsScreen.route
         ),
-        // Add more navigation items here as your app grows
-        // BottomNavItem(
-        //     title = "Settings", 
-        //     icon = Icons.Default.Settings,
-        //     route = "settings"
-        // )
+        BottomNavItem(
+            title = "Hotels",
+            icon = Icons.Default.Hotel,
+            route = AppScreens.HotelsListScreen.route
+        )
     )
 
     NavigationBar {
         items.forEach { item ->
             NavigationBarItem(
-                icon = { 
+                icon = {
                     Icon(
                         imageVector = item.icon,
                         contentDescription = item.title
