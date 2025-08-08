@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.teka.tsela.modules.chat_module.ChatScreen
 import com.teka.tsela.modules.collections.collections_list.CollectionsScreen
 import com.teka.tsela.modules.collections.collections_form.CollectionForm
 import com.teka.tsela.modules.destinations_module.DestinationsScreen
@@ -103,6 +104,16 @@ fun MainNavGraph(
             popExitTransition = ScreenTransitions.popExitTransition,
         ){
 //            ExcursionsDetailsScreen(navController)
+        }
+
+        composable(
+            route = AppScreens.ChatScreen.route,
+            enterTransition = ScreenTransitions.enterTransition,
+            exitTransition = ScreenTransitions.exitTransition,
+            popEnterTransition = ScreenTransitions.popEnterTransition,
+            popExitTransition = ScreenTransitions.popExitTransition,
+        ){
+            ChatScreen(navController)
         }
 
 

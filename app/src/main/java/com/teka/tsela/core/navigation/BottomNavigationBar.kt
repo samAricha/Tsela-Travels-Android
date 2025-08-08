@@ -1,6 +1,7 @@
 package com.teka.tsela.core.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chalet
 import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
@@ -26,11 +27,11 @@ fun BottomNavigationBar(
     currentRoute: String?
 ) {
     val items = listOf(
-//        BottomNavItem(
-//            title = "Collections",
-//            icon = Icons.Default.List,
-//            route = AppScreens.CollectionsListScreen.route
-//        ),
+        BottomNavItem(
+            title = "Chat",
+            icon = Icons.Default.Chalet,
+            route = AppScreens.ChatScreen.route
+        ),
         BottomNavItem(
             title = "Destinations",
             icon = Icons.Default.Place,
