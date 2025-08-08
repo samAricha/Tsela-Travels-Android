@@ -11,6 +11,7 @@ import com.teka.tsela.modules.collections.collections_list.CollectionsScreen
 import com.teka.tsela.modules.collections.collections_form.CollectionForm
 import com.teka.tsela.modules.destinations_module.DestinationsScreen
 import com.teka.tsela.modules.excursions_module.ExcursionsScreen
+import com.teka.tsela.modules.home.HomeScreen
 import com.teka.tsela.modules.hotels_module.HotelsScreen
 
 
@@ -22,7 +23,7 @@ fun MainNavGraph(
 
     NavHost(
         navController = navController,
-        startDestination = AppScreens.DestinationsScreen.route,
+        startDestination = AppScreens.HomeScreen.route,
         route = MAIN_GRAPH_ROUTE
     ) {
 
@@ -114,6 +115,16 @@ fun MainNavGraph(
             popExitTransition = ScreenTransitions.popExitTransition,
         ){
             ChatScreen(navController)
+        }
+
+        composable(
+            route = AppScreens.HomeScreen.route,
+            enterTransition = ScreenTransitions.enterTransition,
+            exitTransition = ScreenTransitions.exitTransition,
+            popEnterTransition = ScreenTransitions.popEnterTransition,
+            popExitTransition = ScreenTransitions.popExitTransition,
+        ){
+            HomeScreen(navController)
         }
 
 

@@ -28,9 +28,9 @@ fun BottomNavigationBar(
 ) {
     val items = listOf(
         BottomNavItem(
-            title = "Chat",
+            title = "Home",
             icon = Icons.Default.Chalet,
-            route = AppScreens.ChatScreen.route
+            route = AppScreens.HomeScreen.route
         ),
         BottomNavItem(
             title = "Destinations",
