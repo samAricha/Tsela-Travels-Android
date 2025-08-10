@@ -159,4 +159,9 @@ dependencies {
 
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("co.touchlab:kermit:2.0.4")
+
+
+    implementation("com.halilibo.compose-richtext:richtext-ui:0.17.0")
+    implementation("com.halilibo.compose-richtext:richtext-ui-material3:0.17.0")
+    implementation("com.halilibo.compose-richtext:richtext-commonmark:0.17.0")
 }

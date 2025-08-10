@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.TextView
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
@@ -36,18 +37,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.Typeface
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil3.ImageLoader
 import coil3.request.ImageRequest
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.RichText
 import com.teka.tsela.ui.theme.TextSizeXXLarge
 import com.teka.tsela.utils.ui_components.CustomTopAppBar
 import kotlinx.coroutines.delay
@@ -67,10 +75,20 @@ fun ChatScreen(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
 
+    // Track keyboard visibility
+    val windowInsets = WindowInsets.ime
+    val density = LocalDensity.current
+    val keyboardHeight by remember {
+        derivedStateOf {
+            windowInsets.getBottom(density)
+        }
+    }
+    val isKeyboardVisible = keyboardHeight > 0
+
     // Camera URI state
     var photoUri by remember { mutableStateOf<Uri?>(null) }
 
-    // Camera launcher with proper URI handling
+    // Camera and gallery launchers (keeping your existing implementation)
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
@@ -84,13 +102,11 @@ fun ChatScreen(
                 }
                 viewModel.addImage(bitmap)
             } catch (e: Exception) {
-                // Handle error - could show a toast or snackbar
                 e.printStackTrace()
             }
         }
     }
 
-    // Gallery launcher with proper bitmap conversion
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetMultipleContents()
     ) { uris ->
@@ -105,19 +121,16 @@ fun ChatScreen(
                     }
                     viewModel.addImage(bitmap)
                 } catch (e: Exception) {
-                    // Handle error - could show a toast or snackbar
                     e.printStackTrace()
                 }
             }
         }
     }
 
-    // Permission launcher
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
-            // Create URI for the photo
             val contentValues = ContentValues().apply {
                 put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
                 put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
@@ -131,79 +144,87 @@ fun ChatScreen(
             photoUri?.let { uri ->
                 cameraLauncher.launch(uri)
             }
-        } else {
-            // Handle permission denied - could show explanation
         }
     }
 
     // Auto-scroll to bottom when new messages arrive
     LaunchedEffect(uiState.currentSession?.messages?.size) {
         if (uiState.currentSession?.messages?.isNotEmpty() == true) {
-            delay(100) // Small delay to ensure message is rendered
+            delay(100)
             listState.animateScrollToItem(uiState.currentSession!!.messages.size - 1)
         }
     }
 
-    // Error handling
     uiState.error?.let { error ->
         LaunchedEffect(error) {
-            // You can show a snackbar here
+            // Handle error
         }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Main content
+        // Main content with proper window insets handling
         Scaffold(
+            modifier = Modifier.fillMaxSize(),
             topBar = {
-                CustomTopAppBar(
-                    title = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            IconButton(
-                                onClick = { viewModel.toggleSidebar() }
+                // Compact top bar when keyboard is visible
+                if (isKeyboardVisible) {
+                    CompactTopAppBar(
+                        title = "Assistant Tsela",
+                        onMenuClick = { viewModel.toggleSidebar() },
+                        onNewChatClick = { viewModel.createNewChatSession() },
+                        onDismissKeyboard = { focusManager.clearFocus() }
+                    )
+                } else {
+                    CustomTopAppBar(
+                        title = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Menu,
-                                    contentDescription = "Open chat history",
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
-                            }
-
-                            Column {
-                                Text(
-                                    text = "Assistant Tsela",
-                                    fontSize = TextSizeXXLarge,
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                if (uiState.currentSession != null) {
-                                    Text(
-                                        text = uiState.currentSession!!.title,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
+                                IconButton(
+                                    onClick = { viewModel.toggleSidebar() }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Menu,
+                                        contentDescription = "Open chat history",
+                                        tint = MaterialTheme.colorScheme.onSurface
                                     )
                                 }
+
+                                Column {
+                                    Text(
+                                        text = "Assistant Tsela",
+                                        fontSize = TextSizeXXLarge,
+                                        style = MaterialTheme.typography.headlineSmall,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    if (uiState.currentSession != null) {
+                                        Text(
+                                            text = uiState.currentSession!!.title,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
+                                }
                             }
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { viewModel.createNewChatSession() }
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Add,
-                                contentDescription = "New chat"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.Transparent
+                        },
+                        actions = {
+                            IconButton(
+                                onClick = { viewModel.createNewChatSession() }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = "New chat"
+                                )
+                            }
+                        },
+                        colors = TopAppBarDefaults.topAppBarColors(
+                            containerColor = Color.Transparent
+                        )
                     )
-                )
+                }
             },
             bottomBar = {
                 Column {
@@ -227,7 +248,6 @@ fun ChatScreen(
                         onCameraClick = {
                             when (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)) {
                                 PackageManager.PERMISSION_GRANTED -> {
-                                    // Permission already granted, proceed with camera
                                     val contentValues = ContentValues().apply {
                                         put(MediaStore.Images.Media.DISPLAY_NAME, "IMG_${System.currentTimeMillis()}.jpg")
                                         put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
@@ -243,7 +263,6 @@ fun ChatScreen(
                                     }
                                 }
                                 else -> {
-                                    // Request permission
                                     permissionLauncher.launch(Manifest.permission.CAMERA)
                                 }
                             }
@@ -254,16 +273,16 @@ fun ChatScreen(
                     )
                 }
             },
-            containerColor = MaterialTheme.colorScheme.background
+            containerColor = MaterialTheme.colorScheme.background,
+            // This is crucial for proper keyboard handling
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
         ) { paddingValues ->
             if (uiState.currentSession == null) {
-                // Welcome screen when no chat session
                 WelcomeContent(
                     onCreateChat = { viewModel.createNewChatSession() },
                     modifier = Modifier.padding(paddingValues)
                 )
             } else {
-                // Chat messages
                 ChatContent(
                     session = uiState.currentSession!!,
                     listState = listState,
@@ -284,6 +303,204 @@ fun ChatScreen(
             onRenameSession = viewModel::renameChatSession,
             onDismiss = { viewModel.toggleSidebar() }
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun CompactTopAppBar(
+    title: String,
+    onMenuClick: () -> Unit,
+    onNewChatClick: () -> Unit,
+    onDismissKeyboard: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.95f),
+        shadowElevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                IconButton(
+                    onClick = onMenuClick,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Menu,
+                        contentDescription = "Open chat history",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Medium,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f, fill = false)
+                )
+            }
+
+            Row {
+                IconButton(
+                    onClick = onNewChatClick,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "New chat",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onDismissKeyboard,
+                    modifier = Modifier.size(36.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Hide keyboard",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun RichMarkdownText(
+    markdown: String,
+    modifier: Modifier = Modifier
+) {
+    RichText(
+        modifier = modifier
+    ) {
+        Markdown(content = markdown)
+    }
+}
+
+// Updated MessageItem to use Markdown rendering
+@Composable
+private fun MessageItem(
+    message: ChatMessage,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = if (message.isFromUser) {
+            Arrangement.End
+        } else {
+            Arrangement.Start
+        }
+    ) {
+        if (message.isFromUser) {
+            // User message (keep as is)
+            Column(
+                horizontalAlignment = Alignment.End,
+                modifier = Modifier.widthIn(max = 300.dp)
+            ) {
+                // Images if present
+                if (message.images.isNotEmpty()) {
+                    MessageImagesGrid(
+                        images = message.images,
+                        modifier = Modifier.padding(bottom = 4.dp)
+                    )
+                }
+
+                // Text message if present
+                if (message.content.isNotBlank()) {
+                    Surface(
+                        shape = RoundedCornerShape(
+                            topStart = 20.dp,
+                            topEnd = 20.dp,
+                            bottomStart = 20.dp,
+                            bottomEnd = 4.dp
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    ) {
+                        Text(
+                            text = message.content,
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                }
+            }
+        } else {
+            // AI message with Markdown support
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                // AI Avatar
+                Surface(
+                    modifier = Modifier.size(32.dp),
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.secondaryContainer
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.SmartToy,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(6.dp),
+                        tint = MaterialTheme.colorScheme.onSecondaryContainer
+                    )
+                }
+
+                Surface(
+                    modifier = Modifier.widthIn(max = 300.dp),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        topEnd = 20.dp,
+                        bottomStart = 20.dp,
+                        bottomEnd = 20.dp
+                    ),
+                    color = MaterialTheme.colorScheme.surfaceVariant
+                ) {
+                    if (message.isLoading) {
+                        // Typing indicator
+                        TypingIndicator(
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    } else {
+                        // Use one of the markdown solutions here
+                        RichMarkdownText(
+                            markdown = message.content,
+                            modifier = Modifier.padding(16.dp),
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+
+                        // Alternative: Use SimpleMarkdownText for lightweight solution
+                        // SimpleMarkdownText(
+                        //     markdown = message.content,
+                        //     modifier = Modifier.padding(16.dp),
+                        //     style = MaterialTheme.typography.bodyMedium,
+                        //     color = MaterialTheme.colorScheme.onSurfaceVariant
+                        // )
+
+                        // Alternative: Use RichMarkdownText for full features
+                        // RichMarkdownText(
+                        //     markdown = message.content,
+                        //     modifier = Modifier.padding(16.dp)
+                        // )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -554,7 +771,7 @@ private fun ChatContent(
 }
 
 @Composable
-private fun MessageItem(
+private fun MessageItem2(
     message: ChatMessage,
     modifier: Modifier = Modifier
 ) {
