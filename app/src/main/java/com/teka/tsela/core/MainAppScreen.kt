@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.teka.tsela.core.navigation.AppScreens
 import com.teka.tsela.core.navigation.BottomNavigationBar
 import com.teka.tsela.core.navigation.MainNavGraph
 import com.teka.tsela.core.navigation.rememberAppState
@@ -27,12 +28,24 @@ fun MainAppScreen() {
     val route = newBackStackEntry?.destination?.route
     val context = LocalContext.current
 
+
+    val bottomBarRoutes = setOf(
+        AppScreens.HomeScreen.route,
+        AppScreens.DestinationsScreen.route,
+        AppScreens.ExcursionsScreen.route,
+        AppScreens.HotelsListScreen.route
+    )
+
+    val shouldShowBottomBar = route in bottomBarRoutes
+
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(
-                navController = appState.navHostController,
-                currentRoute = route
-            )
+            if (shouldShowBottomBar) {
+                BottomNavigationBar(
+                    navController = appState.navHostController,
+                    currentRoute = route
+                )
+            }
         }
     ) { innerPadding ->
         Box(modifier = Modifier.padding(innerPadding)) {

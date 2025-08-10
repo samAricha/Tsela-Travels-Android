@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -5,6 +7,7 @@ plugins {
     kotlin("plugin.serialization")
     id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -19,6 +22,27 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        //load the values from .properties file
+        val keystoreFile = project.rootProject.file("envVariables.properties")
+        val properties = Properties()
+        properties.load(keystoreFile.inputStream())
+        val backendUrl = properties.getProperty("BACKEND_URL") ?: ""
+        val geminiKey = properties.getProperty("geminiApiKey") ?: ""
+
+        buildConfigField(
+            type = "String",
+            name = "BACKEND_URL",
+            value = backendUrl
+        )
+        buildConfigField(
+            type = "String",
+            name = "GEMINI_API_KEY",
+            value = geminiKey
+        )
+
+
+
     }
 
     buildTypes {
@@ -39,7 +63,11 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
+
+
+
 }
 
 dependencies {
@@ -68,10 +96,21 @@ dependencies {
     implementation("io.github.jan-tennert.supabase:realtime-kt")
     implementation("io.github.jan-tennert.supabase:functions-kt")
 
-    val ktor_version = "3.1.2"
-    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    // Firebase platform
+    implementation(platform("com.google.firebase:firebase-bom:34.1.0"))
+    implementation("com.google.firebase:firebase-ai")
+    implementation("com.google.firebase:firebase-vertexai:16.5.0")
+    implementation("com.google.firebase:firebase-analytics")
 
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+    val ktor_version = "2.3.12"
+//    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+//    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
+
+
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
 
 
     val compose_version = "1.7.2"
@@ -120,6 +159,4 @@ dependencies {
 
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("co.touchlab:kermit:2.0.4")
-
-
 }
