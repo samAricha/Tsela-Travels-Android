@@ -1,14 +1,17 @@
 package com.teka.tsela.modules.itenerary_module
 
-import androidx.compose.animation.*
-import androidx.compose.animation.core.*
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -38,11 +41,14 @@ import androidx.navigation.NavController
 import com.teka.tsela.ui.theme.TextSizeXLarge
 import com.teka.tsela.ui.theme.TextSizeXXLarge
 import com.teka.tsela.utils.ui_components.CustomTopAppBar
-import io.github.jan.supabase.annotations.SupabaseExperimental
 import timber.log.Timber
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TripPlannerScreen(
@@ -393,7 +399,11 @@ private fun PreferencesStep(
                             )
                         }
 
-                        LazyRow(
+                        // Fixed height LazyVerticalGrid with 2 columns for destinations
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.height(200.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(TripPlannerViewModel.DESTINATIONS) { destination ->
@@ -438,7 +448,11 @@ private fun PreferencesStep(
                             )
                         }
 
-                        LazyRow(
+                        // Fixed height LazyVerticalGrid with 2 columns for experiences
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.height(200.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(TripPlannerViewModel.EXPERIENCES) { experience ->
@@ -456,6 +470,7 @@ private fun PreferencesStep(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TripDetailsStep(
@@ -468,6 +483,18 @@ private fun TripDetailsStep(
     val datePickerState = rememberDatePickerState()
     var showDatePicker by remember { mutableStateOf(false) }
 
+
+    val interactionSource = remember { MutableInteractionSource() }
+
+    // Listen for clicks on the date field
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Release) {
+                showDatePicker = true
+            }
+        }
+    }
+
     // Handle date selection
     LaunchedEffect(datePickerState.selectedDateMillis) {
         datePickerState.selectedDateMillis?.let { millis ->
@@ -476,6 +503,7 @@ private fun TripDetailsStep(
             onUpdate { copy(startDate = date) }
         }
     }
+
 
     LazyColumn(
         modifier = Modifier
@@ -515,13 +543,13 @@ private fun TripDetailsStep(
                             )
                         },
                         readOnly = true,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showDatePicker = true },
+                        modifier = Modifier.fillMaxWidth(),
                         isError = errors.startDate != null,
                         supportingText = errors.startDate?.let { { Text(it) } },
-                        shape = RoundedCornerShape(12.dp)
+                        shape = RoundedCornerShape(12.dp),
+                        interactionSource = interactionSource // Use the interaction source
                     )
+
 
                     // Duration Selection
                     Column(
@@ -541,7 +569,11 @@ private fun TripDetailsStep(
                             )
                         }
 
-                        LazyRow(
+                        // Fixed height LazyVerticalGrid with 2 columns for durations
+                        LazyVerticalGrid(
+                            columns = GridCells.Fixed(2),
+                            modifier = Modifier.height(120.dp), // Smaller height since durations are fewer
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             items(TripPlannerViewModel.DURATIONS) { (duration, _) ->
@@ -557,7 +589,7 @@ private fun TripDetailsStep(
                     // Group Size
                     OutlinedTextField(
                         value = if (tripDetails.groupSize > 0) tripDetails.groupSize.toString() else "",
-                        onValueChange = { 
+                        onValueChange = {
                             val size = it.toIntOrNull() ?: 0
                             onUpdate { copy(groupSize = size) }
                         },
@@ -584,7 +616,7 @@ private fun TripDetailsStep(
                     // Budget
                     OutlinedTextField(
                         value = if (tripDetails.budget > 0) tripDetails.budget.toString() else "",
-                        onValueChange = { 
+                        onValueChange = {
                             val budget = it.toIntOrNull() ?: 0
                             onUpdate { copy(budget = budget) }
                         },
@@ -635,19 +667,45 @@ private fun TripDetailsStep(
         }
     }
 
-    // Date Picker Dialog
+
     if (showDatePicker) {
-        DatePickerDialog(
-            onDateSelected = { showDatePicker = false },
+        MyDatePickerDialog(
+            datePickerState = datePickerState,
+            onDateSelected = { /* handle if needed */ },
             onDismiss = { showDatePicker = false }
-        ) {
-            DatePicker(
-                state = datePickerState,
-                showModeToggle = false
-            )
-        }
+        )
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun MyDatePickerDialog(
+    datePickerState: DatePickerState, // Accept state as parameter
+    onDateSelected: (Long?) -> Unit,
+    onDismiss: () -> Unit
+) {
+    DatePickerDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = {
+                onDateSelected(datePickerState.selectedDateMillis)
+                onDismiss()
+            }) {
+                Text("OK")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    ) {
+        DatePicker(state = datePickerState)
+    }
+}
+
+
 
 @Composable
 private fun StepHeader(
@@ -905,19 +963,8 @@ private fun ErrorSnackbar(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-private fun DatePickerDialog(
-    onDateSelected: () -> Unit,
-    onDismiss: () -> Unit,
-    content: @Composable () -> Unit
-) {
-    DatePickerDialog(
-        onDateSelected = onDateSelected,
-        onDismiss = onDismiss,
-        content = content
-    )
-}
+
+
 
 @Composable
 private fun ItineraryScreen(
@@ -986,7 +1033,7 @@ private fun ItineraryScreen(
                     text = itinerary,
                     modifier = Modifier.padding(20.dp),
                     style = MaterialTheme.typography.bodyMedium,
-                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
+//                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
                 )
             }
         }
