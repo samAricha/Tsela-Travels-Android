@@ -274,7 +274,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Text(
-                text = "Streamline Your Collection Operations",
+                text = "Design Your Dream Getaway",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = Color(0xFF6B7280),
@@ -283,7 +283,7 @@ fun LoginScreen(
             )
 
             Text(
-                text = "Efficient • Organized • Productive",
+                text = "Effortless • Personalized • Memorable",
                 fontSize = 12.sp,
                 fontWeight = FontWeight.Normal,
                 color = Color(0xFF9CA3AF),

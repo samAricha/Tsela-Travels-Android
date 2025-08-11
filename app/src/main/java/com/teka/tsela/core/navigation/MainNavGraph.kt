@@ -1,5 +1,7 @@
 package com.teka.tsela.core.navigation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -16,6 +18,7 @@ import com.teka.tsela.modules.hotels_module.HotelsScreen
 import com.teka.tsela.modules.itenerary_module.TripPlannerScreen
 
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainNavGraph(

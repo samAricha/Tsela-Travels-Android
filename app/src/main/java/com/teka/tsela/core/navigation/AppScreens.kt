@@ -24,5 +24,6 @@ sealed class AppScreens(val route: String, val title: String? = null) {
     object HotelDetailsScreen : AppScreens(route = "hotel_details_screen")
     object ChatScreen : AppScreens(route = "chat_screen")
     object TripPlannerScreen : AppScreens(route = "trip_planner_screen")
+    object LandingScreen : AppScreens(route = "landing_screen")
 
 }

@@ -36,6 +36,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.teka.tsela.ui.theme.TextSizeXLarge
@@ -107,6 +108,8 @@ fun TripPlannerScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
+
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -254,7 +257,9 @@ private fun PersonalInfoStep(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(vertical = 24.dp)
     ) {
         item {
             StepHeader(
@@ -357,7 +362,9 @@ private fun PreferencesStep(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(vertical = 24.dp)
     ) {
         item {
             StepHeader(
@@ -509,7 +516,9 @@ private fun TripDetailsStep(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+        verticalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        contentPadding = PaddingValues(vertical = 24.dp)
     ) {
         item {
             StepHeader(
@@ -820,6 +829,13 @@ private fun NavigationButtons(
         )
     )
 
+    val disabledGradient = Brush.linearGradient(
+        colors = listOf(
+            Color(0xFFf97316).copy(alpha = 0.7f), // Orange with reduced opacity
+            Color(0xFFef4444).copy(alpha = 0.7f)  // Red with reduced opacity
+        )
+    )
+
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -845,18 +861,25 @@ private fun NavigationButtons(
         // Next/Submit Button
         Button(
             onClick = if (currentStep == 2) onSubmit else onNext,
-            modifier = Modifier.weight(if (currentStep > 0) 1f else 2f),
+            modifier = Modifier
+                .weight(if (currentStep > 0) 1f else 2f)
+                .height(56.dp), // Add consistent height
             enabled = !isLoading,
             shape = RoundedCornerShape(12.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent
-            )
+                containerColor = Color.Transparent,
+                disabledContainerColor = Color.Transparent
+            ),
+            contentPadding = PaddingValues(0.dp) // Remove default padding
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .background(orangeGradient, RoundedCornerShape(12.dp))
-                    .padding(vertical = 4.dp),
+                    .fillMaxSize()
+                    .background(
+                        brush = if (!isLoading) orangeGradient else disabledGradient,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(vertical = 12.dp, horizontal = 16.dp),
                 contentAlignment = Alignment.Center
             ) {
                 if (isLoading && currentStep == 2) {
@@ -870,21 +893,26 @@ private fun NavigationButtons(
                             color = Color.White
                         )
                         Text(
-                            "🤖 Creating Your Itinerary...",
+                            text = "🤖 Creating Your Itinerary...",
                             color = Color.White,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.Medium,
+                            fontSize = 16.sp
                         )
                     }
                 } else {
                     Row(
+                        modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        horizontalArrangement = Arrangement.Center
                     ) {
                         Text(
-                            if (currentStep == 2) "Create Itinerary" else "Next",
+                            text = if (currentStep == 2) "Create Itinerary" else "Next",
                             color = Color.White,
-                            fontWeight = FontWeight.Medium
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center
                         )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             imageVector = if (currentStep == 2) Icons.Default.Send else Icons.Default.ArrowForward,
                             contentDescription = null,
@@ -895,6 +923,8 @@ private fun NavigationButtons(
                 }
             }
         }
+
+
     }
 }
 
