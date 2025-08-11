@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.halilibo.richtext.markdown.Markdown
+import com.halilibo.richtext.ui.RichText
 import com.teka.tsela.ui.theme.TextSizeXLarge
 import com.teka.tsela.ui.theme.TextSizeXXLarge
 import com.teka.tsela.utils.ui_components.CustomTopAppBar
@@ -1059,11 +1061,9 @@ private fun ItineraryScreen(
                 elevation = CardDefaults.elevatedCardElevation(defaultElevation = 2.dp),
                 shape = RoundedCornerShape(12.dp)
             ) {
-                Text(
-                    text = itinerary,
-                    modifier = Modifier.padding(20.dp),
-                    style = MaterialTheme.typography.bodyMedium,
-//                    lineHeight = MaterialTheme.typography.bodyMedium.lineHeight * 1.2
+                RichMarkdownText(
+                    markdown = itinerary,
+                    modifier = Modifier.padding(20.dp)
                 )
             }
         }
@@ -1106,5 +1106,19 @@ private fun ItineraryScreen(
                 Text("Share", color = Color.White)
             }
         }
+    }
+}
+
+
+
+@Composable
+fun RichMarkdownText(
+    markdown: String,
+    modifier: Modifier = Modifier
+) {
+    RichText(
+        modifier = modifier
+    ) {
+        Markdown(content = markdown)
     }
 }
