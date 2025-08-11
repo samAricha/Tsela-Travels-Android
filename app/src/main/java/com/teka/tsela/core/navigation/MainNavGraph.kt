@@ -13,6 +13,7 @@ import com.teka.tsela.modules.destinations_module.DestinationsScreen
 import com.teka.tsela.modules.excursions_module.ExcursionsScreen
 import com.teka.tsela.modules.home.HomeScreen
 import com.teka.tsela.modules.hotels_module.HotelsScreen
+import com.teka.tsela.modules.itenerary_module.TripPlannerScreen
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,6 +126,16 @@ fun MainNavGraph(
             popExitTransition = ScreenTransitions.popExitTransition,
         ){
             HomeScreen(navController)
+        }
+
+        composable(
+            route = AppScreens.TripPlannerScreen.route,
+            enterTransition = ScreenTransitions.enterTransition,
+            exitTransition = ScreenTransitions.exitTransition,
+            popEnterTransition = ScreenTransitions.popEnterTransition,
+            popExitTransition = ScreenTransitions.popExitTransition,
+        ){
+            TripPlannerScreen(navController)
         }
 
 

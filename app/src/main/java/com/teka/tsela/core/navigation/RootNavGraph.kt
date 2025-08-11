@@ -17,6 +17,7 @@ fun RootNavGraph(
         route = ROOT_GRAPH_ROUTE
     ) {
         authNavGraph(navController = navController)
+        openNavGraph(navController = navController)
 
         composable(route = To_MAIN_GRAPH_ROUTE) {
             MainAppScreen()

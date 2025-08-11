@@ -2,6 +2,7 @@ package com.teka.tsela.core.navigation
 
 const val ROOT_GRAPH_ROUTE = "root_graph_route"
 const val AUTH_GRAPH_ROUTE = "auth_graph_route"
+const val OPEN_GRAPH_ROUTE = "open_graph_route"
 const val MAIN_GRAPH_ROUTE = "main_graph_route"
 const val To_MAIN_GRAPH_ROUTE = "to_main_graph_route"
 
@@ -22,5 +23,6 @@ sealed class AppScreens(val route: String, val title: String? = null) {
     object HotelsListScreen : AppScreens(route = "hotels_screen")
     object HotelDetailsScreen : AppScreens(route = "hotel_details_screen")
     object ChatScreen : AppScreens(route = "chat_screen")
+    object TripPlannerScreen : AppScreens(route = "trip_planner_screen")
 
 }

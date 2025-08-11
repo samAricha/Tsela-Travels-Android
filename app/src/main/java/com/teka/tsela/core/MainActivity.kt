@@ -15,6 +15,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.teka.tsela.core.navigation.OPEN_GRAPH_ROUTE
 import com.teka.tsela.core.navigation.RootNavGraph
 import com.teka.tsela.data_layer.DataStoreRepository
 import com.teka.tsela.modules.auth_module.AuthViewModel
@@ -63,7 +64,8 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.imePadding()
                     ) {
-                        var startDestination = authViewModel.startDestination.collectAsState().value
+//                        var startDestination = authViewModel.startDestination.collectAsState().value
+                        var startDestination = OPEN_GRAPH_ROUTE
                         splashScreen.setKeepOnScreenCondition { startDestination.isNullOrEmpty() }
 
                         startDestination?.let { startDestination ->
