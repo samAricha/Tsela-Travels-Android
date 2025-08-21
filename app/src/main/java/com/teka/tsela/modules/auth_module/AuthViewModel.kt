@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.teka.tsela.core.navigation.AUTH_GRAPH_ROUTE
+import com.teka.tsela.core.navigation.OPEN_GRAPH_ROUTE
 import com.teka.tsela.core.navigation.To_MAIN_GRAPH_ROUTE
 import com.teka.tsela.data_layer.DataStoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -74,7 +75,7 @@ class AuthViewModel @Inject constructor(
                     _startDestination.value = To_MAIN_GRAPH_ROUTE
                 }
                 is SessionStatus.NotAuthenticated -> {
-                    _startDestination.value = AUTH_GRAPH_ROUTE
+                    _startDestination.value = OPEN_GRAPH_ROUTE
                 }
 
                 SessionStatus.Initializing -> {}

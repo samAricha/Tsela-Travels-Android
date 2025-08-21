@@ -64,8 +64,8 @@ class MainActivity : ComponentActivity() {
                     Box(
                         modifier = Modifier.imePadding()
                     ) {
-//                        var startDestination = authViewModel.startDestination.collectAsState().value
-                        var startDestination = OPEN_GRAPH_ROUTE
+                        var startDestination = authViewModel.startDestination.collectAsState().value
+//                        var startDestination = OPEN_GRAPH_ROUTE
                         splashScreen.setKeepOnScreenCondition { startDestination.isNullOrEmpty() }
 
                         startDestination?.let { startDestination ->
