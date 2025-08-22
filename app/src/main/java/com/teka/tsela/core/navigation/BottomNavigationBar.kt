@@ -2,6 +2,7 @@ package com.teka.tsela.core.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Chalet
+import androidx.compose.material.icons.filled.Event
 import androidx.compose.material.icons.filled.Hotel
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Place
@@ -41,6 +42,11 @@ fun BottomNavigationBar(
             title = "Excursions",
             icon = Icons.Default.Tour,
             route = AppScreens.ExcursionsScreen.route
+        ),
+        BottomNavItem(
+            title = "Events",
+            icon = Icons.Default.Event,
+            route = AppScreens.EventsScreen.route
         ),
         BottomNavItem(
             title = "Hotels",

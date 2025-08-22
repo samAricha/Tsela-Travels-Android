@@ -12,6 +12,7 @@ import com.teka.tsela.modules.chat_module.ChatScreen
 import com.teka.tsela.modules.collections.collections_list.CollectionsScreen
 import com.teka.tsela.modules.collections.collections_form.CollectionForm
 import com.teka.tsela.modules.destinations_module.DestinationsScreen
+import com.teka.tsela.modules.events_module.EventsScreen
 import com.teka.tsela.modules.excursions_module.ExcursionsScreen
 import com.teka.tsela.modules.home.HomeScreen
 import com.teka.tsela.modules.hotels_module.HotelsScreen
@@ -79,6 +80,16 @@ fun MainNavGraph(
             popExitTransition = ScreenTransitions.popExitTransition,
         ){
             ExcursionsScreen(navController)
+        }
+
+        composable(
+            route = AppScreens.EventsScreen.route,
+            enterTransition = ScreenTransitions.enterTransition,
+            exitTransition = ScreenTransitions.exitTransition,
+            popEnterTransition = ScreenTransitions.popEnterTransition,
+            popExitTransition = ScreenTransitions.popExitTransition,
+        ){
+            EventsScreen(navController)
         }
 
         composable(

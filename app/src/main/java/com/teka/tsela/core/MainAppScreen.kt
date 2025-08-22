@@ -33,6 +33,7 @@ fun MainAppScreen() {
         AppScreens.HomeScreen.route,
         AppScreens.DestinationsScreen.route,
         AppScreens.ExcursionsScreen.route,
+        AppScreens.EventsScreen.route,
         AppScreens.HotelsListScreen.route
     )
 
